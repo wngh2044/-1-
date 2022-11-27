@@ -1,3 +1,4 @@
+//변수 초기화
 const canvas = document.getElementById("jsCanvas");
 const ctx = canvas.getContext("2d");
 const colors = document.getElementsByClassName("jsColor");
@@ -9,21 +10,24 @@ const image = document.getElementById("jsImage");
 const jsTri = document.getElementById("jsTri");
 const jsRect = document.getElementById("jsRect");
 const jsCircle = document.getElementById("jsCircle");
-const main = document.querySelector("main");
 const fontBt = document.getElementById("jsFontBt");
+const ftSize = document.getElementById("jsFtSize");
 
 const INITIAL_COLOR = "#000000";
-
+//변수 초기화
 let painting = false;
 let filling = false;
 let changing = false;
 let drawRect = false;
 let drawTriangle = false;
 let drawCircle = false;
+let sizeChange = 0;
 
+//캔버스 사이즈
 canvas.width = 1000;
 canvas.height = 700;
 
+ctx.fontSize = "20px";
 ctx.fillStyle = "white";
 ctx.fillRect(0, 0, canvas.width, canvas.height);
 ctx.strokeStyle = INITIAL_COLOR;
@@ -43,31 +47,27 @@ function onMouseMove(event) {
   }
 }
 //그리기, 멈추기
-function stopPainting() {
-  painting = false;
-}
 function startPainting() {
   painting = true;
+}
+function stopPainting() {
+  painting = false;
 }
 function onMouseUp() {
   stopPainting();
 }
+
 //색깔 바꾸기
 function handleColorClick(event) {
   const color = event.target.style.backgroundColor;
   ctx.strokeStyle = color;
   ctx.fillStyle = color;
 }
+
 //두께조절
 function handleRangeChange(event) {
   const size = event.target.value;
   ctx.lineWidth = size;
-}
-//배경색 채우기
-function handleCanvasClick() {
-  if (filling) {
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  }
 }
 
 //그리기, 채우기 전환 함수
@@ -81,12 +81,19 @@ function handleModeClick() {
   }
 }
 
+//배경색 채우기
+function handleCanvasClick() {
+  if (filling) {
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+}
+
 //저장하기 함수
 function handleSaveClick() {
   const image = canvas.toDataURL("image/png");
   const link = document.createElement("a");
   link.href = image;
-  link.download = "PaintJS[EXPORT]";
+  link.download = "JS_Canvas";
   link.click();
 }
 
@@ -186,6 +193,32 @@ function handleCircleClick() {
     }
   };
 }
+
+//글자 크기 변경 5단계
+function fontSizeChange() {
+  if (sizeChange == 0) {
+    sizeChange = 1;
+    ftSize.innerText = "글자크기2";
+    ctx.fontSize = "30px";
+  } else if (sizeChange == 1) {
+    sizeChange = 2;
+    ftSize.innerText = "글자크기3";
+    ctx.fontSize = "40px";
+  } else if (sizeChange == 2) {
+    sizeChange = 3;
+    ftSize.innerText = "글자크기4";
+    ctx.fontSize = "50px";
+  } else if (sizeChange == 3) {
+    sizeChange = 4;
+    ftSize.innerText = "글자크기5";
+    ctx.fontSize = "60px";
+  } else if (sizeChange == 4) {
+    sizeChange = 0;
+    ftSize.innerText = "글자크기1";
+    ctx.fontSize = "20px";
+  }
+}
+
 //폰트 변경 버튼
 function handleFontBtClick() {
   if (changing == true) {
@@ -196,11 +229,12 @@ function handleFontBtClick() {
     fontBt.innerText = "폰트2";
   }
 }
+
 //폰트 변경
 function handleFontChange() {
-  font = "50px arial sans-Serif";
+  font = ctx.fontSize + " arial sans-Serif";
   if (changing) {
-    font = "50px Times New Roman";
+    font = ctx.fontSize + " Times New Roman";
   }
 }
 
@@ -229,6 +263,7 @@ window.onload = function () {
 
     hasInput = true;
   }
+
   //엔터 인식, 텍스트 입력
   function handleEnter(e) {
     var keyCode = e.keyCode;
@@ -245,7 +280,7 @@ window.onload = function () {
     }
   }
 
-  //텍스트 츨력
+  //텍스트 츨력, 객체
   class draw_Text {
     constructor(txt, x, y) {
       this.txt = txt;
@@ -261,56 +296,55 @@ window.onload = function () {
     }
   }
 };
-//버튼 인식
-{
-  if (save) {
-    save.addEventListener("click", handleSaveClick);
-  }
+//버튼 인식,및 실행
+Array.from(colors).forEach((color) =>
+  color.addEventListener("click", handleColorClick)
+);
 
-  Array.from(colors).forEach((color) =>
-    color.addEventListener("click", handleColorClick)
-  );
+if (canvas) {
+  canvas.addEventListener("mousemove", onMouseMove);
+  canvas.addEventListener("mousedown", startPainting);
+  canvas.addEventListener("mouseup", stopPainting);
+  canvas.addEventListener("mouseleave", stopPainting);
+  canvas.addEventListener("click", handleCanvasClick);
+}
 
-  if (canvas) {
-    canvas.addEventListener("mousemove", onMouseMove);
-    canvas.addEventListener("mousedown", startPainting);
-    canvas.addEventListener("mouseup", stopPainting);
-    canvas.addEventListener("mouseleave", stopPainting);
-    canvas.addEventListener("click", handleCanvasClick);
-  }
+if (range) {
+  range.addEventListener("input", handleRangeChange);
+}
 
-  if (range) {
-    range.addEventListener("input", handleRangeChange);
-  }
+if (mode) {
+  mode.addEventListener("click", handleModeClick);
+}
 
-  if (mode) {
-    mode.addEventListener("click", handleModeClick);
-  }
+if (save) {
+  save.addEventListener("click", handleSaveClick);
+}
 
-  if (save) {
-    save.addEventListener("click", handleSaveClick);
-  }
+if (clear) {
+  clear.addEventListener("click", handleClearClick);
+}
 
-  if (clear) {
-    clear.addEventListener("click", handleClearClick);
-  }
+if (image) {
+  image.addEventListener("click", handleImageClick);
+}
 
-  if (image) {
-    image.addEventListener("click", handleImageClick);
-  }
+if (jsTri) {
+  jsTri.addEventListener("click", handleTriangleClick);
+}
 
-  if (jsTri) {
-    jsTri.addEventListener("click", handleTriangleClick);
-  }
+if (jsRect) {
+  jsRect.addEventListener("click", handleRectangleClick);
+}
 
-  if (jsRect) {
-    jsRect.addEventListener("click", handleRectangleClick);
-  }
+if (jsCircle) {
+  jsCircle.addEventListener("click", handleCircleClick);
+}
 
-  if (jsCircle) {
-    jsCircle.addEventListener("click", handleCircleClick);
-  }
-  if (fontBt) {
-    fontBt.addEventListener("click", handleFontBtClick);
-  }
+if (fontBt) {
+  fontBt.addEventListener("click", handleFontBtClick);
+}
+
+if (ftSize) {
+  ftSize.addEventListener("click", fontSizeChange);
 }
