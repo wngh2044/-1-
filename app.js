@@ -1,4 +1,4 @@
-//변수 초기화
+//상수 설정
 const canvas = document.getElementById("jsCanvas");
 const ctx = canvas.getContext("2d");
 const colors = document.getElementsByClassName("jsColor");
@@ -240,10 +240,8 @@ function handleFontChange() {
 
 //텍스트 쓰기
 window.onload = function () {
-  var hasInput = false;
-
   canvas.ondblclick = function (e) {
-    if (hasInput) return;
+    //더블클릭
     addInput(e.offsetX, e.offsetY);
   };
 
@@ -260,8 +258,6 @@ window.onload = function () {
     document.body.appendChild(input);
 
     input.focus();
-
-    hasInput = true;
   }
 
   //엔터 인식, 텍스트 입력
@@ -276,7 +272,6 @@ window.onload = function () {
       );
       drawTx.drawText(drawTx.txt, drawTx.x, drawTx.y);
       document.body.removeChild(this);
-      hasInput = false;
     }
   }
 
